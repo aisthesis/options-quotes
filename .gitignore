@@ -1,0 +1,3 @@
+#files to ignore
+#anything in the nbproject/ directory
+*.swp

@@ -1,6 +1,6 @@
 #! /usr/bin/env python3.3
 import sys
-DIRECTORY = 'tmp/'
+DIRECTORY = '../data/'
 # values to look for in file
 BODY_ID = 'rightcol'
 BODY_TAG = 'div'
