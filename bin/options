@@ -1,11 +1,12 @@
 #!/bin/bash
+TARGET_DIRECTORY="../data/"
 echo -e "Hello, "$USER". This script will retrieve options quotes from Yahoo!\n"
 echo -n "Enter equity ticker and press [ENTER]: "
 read EQUITY
 echo -n -e "\nEnter expiration month in the format YYYY-MM (e.g. '2013-05') and press [ENTER]: "
 read EXPIRATION
 echo -e "\nGetting current option prices for '$EQUITY' with expiration '$EXPIRATION'."
-curl "http://finance.yahoo.com/q/op?s=$EQUITY&m=$EXPIRATION" > "../tmp/$EQUITY$EXPIRATION.html"
+curl "http://finance.yahoo.com/q/op?s=$EQUITY&m=$EXPIRATION" > "$TARGET_DIRECTORY$EQUITY$EXPIRATION.html"
 # Now create a python script to convert the data into a csv
 # Pipe the curl output string directly into the python script, e.g.:
 # CONTENT=$(curl -L "http://finance.yahoo.com/q/op?s="$EQUITY"&m="$EXPIRATION)
