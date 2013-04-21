@@ -94,5 +94,3 @@ def get_element_by_id(element_id, content):
     return remove_after_close(content[start_index:])
 
 print(get_element_by_id(ELEMENT_ID, content))
-print(remove_after_close('<div><div></div><div></div></div><div></div>'))
-#remove_after_close('<blah this is cra-cra!> ')
