@@ -28,7 +28,11 @@ with open(infile, 'r') as f:
 # strip to the part with the info needed
 content = extract.get_element_by_attr('id', TOP_ELEMENT_ID, content)
 
-# get the appropriate portion of the table (for now just the 'Call' table)
+# get the appropriate portion of the table
+# go to second inner table for puts
+if optiontype == 'P':
+    start = content.find('class="{}"'.format(INNER_TABLE_CLASS))
+    content = content[start:]
 content = extract.get_element_by_attr('class', INNER_TABLE_CLASS, content)
 content = extract.get_element_by_tag('table', content[6:-6])
 html_rows = extract.get_rows(content)
@@ -44,4 +48,4 @@ with open(outfile, 'w') as f:
     for row in rows:
         f.write(','.join(row) + '\n')
 
-print("Content was written to file '{}'.".format(outfile))
+print("Quotes were written to file '{}'.".format(outfile))
