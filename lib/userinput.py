@@ -3,8 +3,8 @@ import re
 def retrieve(validator, prompt, errormsg):
     valid = re.compile(validator)
     while True:
-        result = input("\n{}".format(prompt))
+        result = input(prompt)
         if valid.match(result):
             break
-        print(errormsg.format(result))
+        print(('\n' + errormsg).format(result))
     return result
