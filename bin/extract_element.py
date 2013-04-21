@@ -1,6 +1,6 @@
 #! /usr/bin/env python3.3
 import sys
-import datetime
+from datetime import datetime
 
 sys.path.append('../lib')
 import extract
@@ -8,15 +8,18 @@ import util
 
 DIRECTORY = '../data/'
 # values to look for in file
-TOP_ELEMENT_ID = 'rightcol'
-COMPANY_ELEMENT_ID = 'yfi_rt_quote_summary'
-COMPANY_INFO_TAG = 'h2'
-QUOTE_TIME_ELEMENT_CLASS = 'time_rtq'
-INPUT_DATE_FORMAT = '%b %d, %I:%M%p %Z'
-FILE_OUTPUT_DATE_FORMAT = '%y%m%d-%H-%M'
+TOP_ELEMENT_ID = 'yfncsumtab'
+INNER_TABLE_CLASS = 'yfnc_datamodoutline1'
+COLUMNS = 'Strike', 'Bid', 'Ask', 'Symbol', 'Last', 'Vol', 'Open Int'
 
-# get input file name from command line
-infile = DIRECTORY + sys.argv[1]
+# get command line info
+equity = sys.argv[1]
+expiration = sys.argv[2]
+optiontype = sys.argv[3]
+
+# construct input file name
+infile = DIRECTORY + equity + expiration + '.html'
+outfile = DIRECTORY + equity + expiration + optiontype + '.csv'
 
 # load file content
 content = ''
@@ -26,15 +29,22 @@ with open(infile, 'r') as f:
 # strip to the part with the info needed
 content = extract.get_element_by_attr('id', TOP_ELEMENT_ID, content)
 
-company_info = extract.get_element_by_attr('id', COMPANY_ELEMENT_ID, content)
-quote_time_str = extract.get_element_by_attr('class', QUOTE_TIME_ELEMENT_CLASS, company_info)
-quote_time_str = util.get_quote_time_str(quote_time_str)
-print(quote_time_str)
-quote_time = datetime.datetime.strptime(quote_time_str, INPUT_DATE_FORMAT)
-print(quote_time.strftime(FILE_OUTPUT_DATE_FORMAT))
+# get the appropriate portion of the table (for now just the 'Call' table)
+content = extract.get_element_by_attr('class', INNER_TABLE_CLASS, content)
+content = extract.get_element_by_tag('table', content[6:-6])
+html_rows = extract.get_rows(content)
+header_row = extract.get_element_by_tag('tr', html_rows[0])
+headers = extract.get_cell_contents(header_row, 'th')
+rows = []
+rows.append(headers)
+for html_row in html_rows[1:]:
+    rows.append(extract.get_cell_contents(html_row))
 
-company_info = extract.get_element_by_tag(COMPANY_INFO_TAG, company_info)
-print(company_info)
+for row in rows:
+    print(row)
 
-ticker = util.get_ticker(company_info)
-print(ticker)
+# write content to file
+with open(outfile, 'w') as f:
+    f.write(content)
+
+print("Content was written to file '{}'.".format(outfile))

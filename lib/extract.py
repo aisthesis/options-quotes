@@ -94,3 +94,40 @@ def get_element_by_tag(tag, content):
     """
     m = re.search('\<' + tag + '[> ]', content)
     return remove_after_close(content[m.start():])
+
+def get_element_contents(element):
+    """Extract the contents from an atomic element
+
+    Assumes that the element contains no nested tags and retrieves
+    the content string stripped of all XML
+
+    Args:
+        element: The full element including opening and closing tag
+
+    Return:
+        The content surround by the opening and closing tags
+    """
+    m = re.search('\>(?P<result>[^<]+)\<', element)
+    return m.group('result')
+
+def get_cell_contents(table_row, cell_type='td'):
+    row = []
+    it = re.finditer('\<' + cell_type + '[> ]', table_row)
+    while True:
+        try:
+            m = next(it)
+            row.append(get_element_contents(table_row[m.start():]))
+        except StopIteration:
+            break
+    return row
+
+def get_rows(table):
+    rows = []
+    it = re.finditer('\<tr[> ]', table)
+    while True:
+        try:
+            m = next(it)
+            rows.append(get_element_by_tag('tr', table[m.start():]))
+        except StopIteration:
+            break
+    return rows
