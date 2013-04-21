@@ -4,7 +4,6 @@ from datetime import datetime
 
 sys.path.append('../lib')
 import extract
-import util
 
 DIRECTORY = '../data/'
 # values to look for in file
@@ -40,13 +39,9 @@ rows.append(headers)
 for html_row in html_rows[1:]:
     rows.append(extract.get_cell_contents(html_row))
 
-for row in rows:
-    print(row)
-
 # write content to file
 with open(outfile, 'w') as f:
-    f.write(content)
+    for row in rows:
+        f.write(','.join(row) + '\n')
 
 print("Content was written to file '{}'.".format(outfile))
-
-print(extract.get_first_tag('blah blah>><></span><div></div>foo'))
