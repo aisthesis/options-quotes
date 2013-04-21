@@ -58,24 +58,25 @@ def remove_after_close(content):
             raise
     return content[:mc.end()]
 
-def get_element_by_id(element_id, content):
+def get_element_by_attr(attr, attr_val, content):
     """Extract an element from a block of html code
 
-    Retrieves the element identified by the given element_id.
+    Retrieves the element identified by the attribute and value.
     Returns an empty string if no such element is found. If multiple
-    elements with the given id are included in the content, this function
-    will return only the first one.
+    elements with the given attribute and value are included in the content, 
+    this function will return only the first one.
 
     Args:
-        element_id: The id of the desired element. For example,
-            if element_id is "blah", the element retrieved will
+        attr: The attribute for which to search
+        attr_val: The value of the attribute for the desired element. For example,
+            if attr_val is "blah" and attr is "id", the element retrieved will
             show in its opening tag id="blah"
-        content: Content to search for the given element_id
+        content: Content to search for the given attribute and value.
 
     Returns:
         A string containing the block of html for the desired element
     """
-    start_index = content.find('id="' + element_id + '"')
+    start_index = content.find(' ' + attr + '="' + attr_val + '"')
     start_index = content[:start_index].rfind('<')
     return remove_after_close(content[start_index:])
 
