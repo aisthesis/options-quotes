@@ -100,6 +100,11 @@ def get_first_tag(content):
     return m.group('tag')
 
 def get_innermost_element(content):
+    # find the first closing tag after an opening tag
+    m = re.search('\<[^/]', content)
+    content = content[m.start():]
+    m = re.search('\<\/[a-zA-Z]+\>', content)
+    content = content[:m.end()]
     it = re.finditer('\<[^/]', content)
     i = 0;
     while True:
@@ -123,7 +128,7 @@ def get_element_contents(element):
     Return:
         The content surround by the opening and closing tags
     """
-    m = re.search('\>(?P<result>[^<]+)\<', element)
+    m = re.search('\>(?P<result>[^<]*)\<', element)
     return m.group('result')
 
 def get_cell_contents(table_row, cell_type='td'):
@@ -132,7 +137,7 @@ def get_cell_contents(table_row, cell_type='td'):
     while True:
         try:
             m = next(it)
-            row.append(get_element_contents(table_row[m.start():]))
+            row.append(get_element_contents(get_innermost_element(table_row[m.start():])))
         except StopIteration:
             break
     return row
