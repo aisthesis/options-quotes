@@ -35,21 +35,42 @@ def remove_after_close(content):
     tag = content[1:tag_end]
     tag = tag.split()[0]
     
-    # Set up a net count for opening and closing tags
-    net_tag_count = 1
-    current_index = len(tag)
+    # Compile appropriate regular expressions
     opening_pattern = re.compile('\<' + tag + '[> ]')
-    matches = opening_pattern.findall(content)
-    print("%d opening matches found." % len(matches))
     closing_pattern = re.compile('\<\/' + tag + '\>')
-    closing_matches = closing_pattern.findall(content)
-    print("%d closing matches found." % len(closing_matches))
-    for m in closing_matches:
-        print(m)
-    closing_str = '</' + tag + '>'
-    end_index = 0
-    #while net_tag_count > 0:
-        
+
+    # Get iterators over pattern matches
+    opening_it = opening_pattern.finditer(content)
+    closing_it = closing_pattern.finditer(content)
+    
+    try:
+        mo = next(opening_it)
+        mc = next(closing_it)
+    except StopIteration:
+        print("Invalid XML block!")
+        raise
+
+    try:
+        mo = next(opening_it)
+    except StopIteration:
+        return content[:mc.end()]
+
+    while mo.start() < mc.start():
+        try:
+            mo = next(opening_it)
+        except StopIteration:
+            try:
+                mc = next(closing_it)
+            except StopIteration:
+                print("No closing tag found!")
+                raise
+            return content[:mc.end()]
+        try:
+            mc = next(closing_it)
+        except StopIteration:
+            print("No closing tag found!")
+            raise
+    return content[:mc.end()]
 
 def get_element_by_id(element_id, content):
     """Extract an element from a block of html code
@@ -72,5 +93,6 @@ def get_element_by_id(element_id, content):
     start_index = content[:start_index].rfind('<')
     return remove_after_close(content[start_index:])
 
-get_element_by_id(ELEMENT_ID, content)
+print(get_element_by_id(ELEMENT_ID, content))
+print(remove_after_close('<div><div></div><div></div></div><div></div>'))
 #remove_after_close('<blah this is cra-cra!> ')
