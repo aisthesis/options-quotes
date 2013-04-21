@@ -2,10 +2,13 @@
 import sys
 sys.path.append('../lib')
 import extract
+import util
 
 DIRECTORY = '../data/'
 # values to look for in file
-ELEMENT_ID = 'rightcol'
+TOP_ELEMENT_ID = 'rightcol'
+COMPANY_ELEMENT_ID = 'yfi_rt_quote_summary'
+COMPANY_INFO_TAG = 'h2'
 
 # get input file name from command line
 infile = DIRECTORY + sys.argv[1]
@@ -15,4 +18,11 @@ content = ''
 with open(infile, 'r') as f:
     content = f.read()
 
-print(extract.get_element_by_id(ELEMENT_ID, content))
+# strip to the part with the info needed
+content = extract.get_element_by_id(TOP_ELEMENT_ID, content)
+
+company_info = extract.get_element_by_id(COMPANY_ELEMENT_ID, content)
+company_info = extract.get_element_by_tag(COMPANY_INFO_TAG, company_info)
+print(company_info)
+ticker = util.get_ticker(company_info)
+print(ticker)

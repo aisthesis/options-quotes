@@ -78,3 +78,18 @@ def get_element_by_id(element_id, content):
     start_index = content.find('id="' + element_id + '"')
     start_index = content[:start_index].rfind('<')
     return remove_after_close(content[start_index:])
+
+def get_element_by_tag(tag, content):
+    """Extract the first element with the given tag
+
+    Retrieves the first element with the given tag specification
+
+    Args:
+        tag: XML tag of the element to extract
+        content: XML string from which the tag is to be extracted
+
+    Returns:
+        A string containing the first block of XML with the given tag
+    """
+    m = re.search('\<' + tag + '[> ]', content)
+    return remove_after_close(content[m.start():])
