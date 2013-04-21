@@ -95,6 +95,22 @@ def get_element_by_tag(tag, content):
     m = re.search('\<' + tag + '[> ]', content)
     return remove_after_close(content[m.start():])
 
+def get_first_tag(content):
+    m = re.search('\<(?P<tag>[a-zA-Z]+)[> ]', content)
+    return m.group('tag')
+
+def get_innermost_element(content):
+    it = re.finditer('\<[^/]', content)
+    i = 0;
+    while True:
+        try:
+            m = next(it)
+            i = m.start()
+        except StopIteration:
+            break
+    content = content[i:]
+    return get_element_by_tag(get_first_tag(content), content)
+
 def get_element_contents(element):
     """Extract the contents from an atomic element
 

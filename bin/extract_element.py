@@ -48,3 +48,5 @@ with open(outfile, 'w') as f:
     f.write(content)
 
 print("Content was written to file '{}'.".format(outfile))
+
+print(extract.get_first_tag('blah blah>><></span><div></div>foo'))
