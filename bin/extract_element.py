@@ -2,16 +2,21 @@
 import sys
 import os
 import re
+import http.client
 
 sys.path.append('../lib')
 import extract
 import userinput
 
-DIRECTORY = '../data/'
-# values to look for in file
+HTTP_SERVER = 'finance.yahoo.com'
+URL_TEMPLATE = '/q/op?s={}&m={}'
+# values to look for in markup
 TOP_ELEMENT_ID = 'yfncsumtab'
 INNER_TABLE_CLASS = 'yfnc_datamodoutline1'
-COLUMNS = 'Strike', 'Bid', 'Ask', 'Symbol', 'Last', 'Vol', 'Open Int'
+# tab-delimited because fields may contain ','
+DELIMITER = '\t'
+OUTFILE_EXTENSION = '.tsv'
+DIRECTORY = '../data/'
 
 user = os.environ.get('USER', 'Investor')
 print("\nHello, {}, this script will retrieve options quotes from Yahoo!\n".format(user))
@@ -38,14 +43,20 @@ errormsg = "'{}' is not a valid option type abbreviation! Please try again."
 optiontype = userinput.retrieve(validator, prompt, errormsg)
 print("Option type is '{}'.\n".format(optiontype))
 
+conn = http.client.HTTPConnection(HTTP_SERVER)
+conn.request("GET", URL_TEMPLATE.format(equity, expiration))
+r = conn.getresponse()
+data = r.read()
+print(data.decode())
+sys.exit()
+
 # get command line info
 equity = sys.argv[1]
 expiration = sys.argv[2]
-optiontype = sys.argv[3]
 
 # construct input file name
 infile = DIRECTORY + equity + expiration + '.html'
-outfile = DIRECTORY + equity + expiration + optiontype + '.csv'
+outfile = DIRECTORY + equity + expiration + optiontype + OUTFILE_EXTENSION
 
 # load file content
 content = ''
@@ -73,6 +84,6 @@ for html_row in html_rows[1:]:
 # write content to file
 with open(outfile, 'w') as f:
     for row in rows:
-        f.write(','.join(row) + '\n')
+        f.write(DELIMITER.join(row) + '\n')
 
 print("Quotes were written to file '{}'.".format(outfile))
