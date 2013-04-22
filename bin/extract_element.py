@@ -43,25 +43,13 @@ errormsg = "'{}' is not a valid option type abbreviation! Please try again."
 optiontype = userinput.retrieve(validator, prompt, errormsg)
 print("Option type is '{}'.\n".format(optiontype))
 
+# Open http connection to retrieve data
 conn = http.client.HTTPConnection(HTTP_SERVER)
 conn.request("GET", URL_TEMPLATE.format(equity, expiration))
 r = conn.getresponse()
 data = r.read()
-print(data.decode())
-sys.exit()
-
-# get command line info
-equity = sys.argv[1]
-expiration = sys.argv[2]
-
-# construct input file name
-infile = DIRECTORY + equity + expiration + '.html'
-outfile = DIRECTORY + equity + expiration + optiontype + OUTFILE_EXTENSION
-
-# load file content
-content = ''
-with open(infile, 'r') as f:
-    content = f.read()
+conn.close()
+content = data.decode()
 
 # strip to the part with the info needed
 content = extract.get_element_by_attr('id', TOP_ELEMENT_ID, content)
@@ -82,6 +70,7 @@ for html_row in html_rows[1:]:
     rows.append(extract.get_cell_contents(html_row))
 
 # write content to file
+outfile = DIRECTORY + equity + expiration + optiontype + OUTFILE_EXTENSION
 with open(outfile, 'w') as f:
     for row in rows:
         f.write(DELIMITER.join(row) + '\n')
