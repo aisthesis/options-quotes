@@ -5,6 +5,5 @@ def retrieve(validator, prompt, errormsg):
     while True:
         result = input(prompt)
         if valid.match(result):
-            break
+            return result
         print(('\n' + errormsg).format(result))
-    return result
