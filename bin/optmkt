@@ -15,8 +15,8 @@ TOP_ELEMENT_ID = 'yfncsumtab'
 INNER_TABLE_CLASS = 'yfnc_datamodoutline1'
 # tab-delimited because fields may contain ','
 DELIMITER = '\t'
-OUTFILE_EXTENSION = '.tsv'
-DIRECTORY = '../data/'
+OUTFILE_EXTENSION = '.txt'
+DIRECTORY = '{}/Documents/Financial/Options/'.format(os.environ.get('HOME'))
 
 user = os.environ.get('USER', 'Investor')
 print("\nHello, {}, this script will retrieve options quotes from Yahoo!\n".format(user))
